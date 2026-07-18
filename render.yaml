@@ -17,5 +17,4 @@ databases:
   # PostgreSQL Database Instance
   - name: elevatebox-db
     databaseName: document_approval
-    user: postgres
     plan: free
