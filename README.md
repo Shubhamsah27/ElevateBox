@@ -4,6 +4,40 @@ A correctness-first, full-stack workflow application for controlled authoring, r
 
 ---
 
+## Document Workflow
+
+```mermaid
+flowchart LR
+    A["Author creates draft"] --> B["Draft"]
+    B -->|"Edit"| B
+    B -->|"Submit for review"| C["Submitted"]
+    C -->|"Reviewer approves"| D["Approved"]
+    C -->|"Reviewer rejects with comment"| E["Rejected"]
+    E -->|"Author reopens"| B
+    D -->|"Reviewer or Admin publishes"| F["Published"]
+    F -->|"Visible to all authenticated roles"| G["Controlled access"]
+    B -->|"Admin archives"| H["Archived"]
+    C -->|"Admin archives"| H
+    D -->|"Admin archives"| H
+    F -->|"Admin archives"| H
+
+    classDef author fill:#4c1d95,stroke:#a78bfa,color:#ffffff
+    classDef reviewer fill:#075985,stroke:#38bdf8,color:#ffffff
+    classDef success fill:#065f46,stroke:#34d399,color:#ffffff
+    classDef warning fill:#7f1d1d,stroke:#f87171,color:#ffffff
+    classDef archive fill:#78350f,stroke:#fbbf24,color:#ffffff
+
+    class A,B author
+    class C,D reviewer
+    class F,G success
+    class E warning
+    class H archive
+```
+
+Every transition is authorization-checked, versioned with optimistic concurrency control, and recorded in the audit timeline.
+
+---
+
 ## 1. Prerequisites
 Before running the application, make sure you have the following installed:
 - [Node.js](https://nodejs.org/) (v20.6.0 or higher is required)
