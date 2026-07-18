@@ -5,7 +5,7 @@ services:
     plan: free
     runtime: node
     buildCommand: npm install && npm run build
-    startCommand: node build
+    startCommand: npx drizzle-kit push --force && npx tsx src/lib/server/db/seed.ts && node build
     envVars:
       - key: DATABASE_URL
         fromDatabase:

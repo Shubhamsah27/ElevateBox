@@ -14,16 +14,10 @@ const client = postgres(dbUrl, { max: 1 });
 const db = drizzle(client, { schema });
 
 async function main() {
-	console.log('Seeding database...');
+	console.log('Checking database seeds...');
 
-	// Clean up existing data in correct order
-	await db.delete(schema.sessions);
-	await db.delete(schema.auditEvents);
-	await db.delete(schema.documents);
-	await db.delete(schema.users);
-
-	// Insert users
-	const seededUsers: Array<typeof schema.users.$inferInsert> = [
+	const existingUsers = await db.select().from(schema.users);
+	const seededUsers = [
 		{ name: 'Alice (Author)', email: 'alice@example.com', role: 'author' },
 		{ name: 'Bob (Reviewer)', email: 'bob@example.com', role: 'reviewer' },
 		{ name: 'Admin (Administrator)', email: 'admin@example.com', role: 'admin' },
@@ -31,11 +25,16 @@ async function main() {
 	];
 
 	for (const u of seededUsers) {
-		const [inserted] = await db.insert(schema.users).values(u).returning();
-		console.log(`Seeded user: ${inserted.name} (${inserted.role}) - ID: ${inserted.id}`);
+		const exists = existingUsers.some((x) => x.email === u.email);
+		if (!exists) {
+			const [inserted] = await db.insert(schema.users).values(u).returning();
+			console.log(`Seeded user: ${inserted.name} (${inserted.role}) - ID: ${inserted.id}`);
+		} else {
+			console.log(`User ${u.email} already exists, skipping.`);
+		}
 	}
 
-	console.log('Database seeding finished.');
+	console.log('Database seeding check finished.');
 	await client.end();
 }
 
