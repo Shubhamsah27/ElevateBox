@@ -2,6 +2,7 @@ services:
   # SvelteKit Web Service
   - type: web
     name: elevatebox-cdas
+    plan: free
     runtime: node
     buildCommand: npm install && npm run build
     startCommand: node build
